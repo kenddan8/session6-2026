@@ -8,6 +8,13 @@
 
 **Input**: User description: "Support for Overdue Todo Items - As a todo application user, I want to easily identify and distinguish overdue tasks in my todo list, so that I can prioritize my work and quickly see which tasks are past their due date. Users need a clear, visual way to identify which todos have not been completed by their due date. This helps users quickly spot overdue items without having to manually check dates against today's date."
 
+## Clarifications
+
+### Session 2026-07-29
+
+- Q: Should overdue status auto-update live via a timer, or only recompute on the next user-triggered re-render? → A: Timer-based auto-refresh — periodic check (e.g., every minute) re-renders the list so overdue status updates live with zero user interaction.
+- Q: What should the overdue visual indicator look like: color alone, or color plus a text label/badge? → A: Text badge + danger color — a small "Overdue" badge/label styled with the Danger color next to or below the due date.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Spot overdue todos at a glance (Priority: P1)
@@ -66,9 +73,9 @@ As a user who keeps the todo list open, I want overdue status to reflect the cur
 automatically, so that a todo becomes marked overdue as soon as its due date passes, even if
 I don't reload the page.
 
-**Why this priority**: A nice-to-have refinement of the core feature; the app remains
-useful even if overdue status is only recalculated on load/refresh, so this is lower
-priority than the core marking and completion behavior.
+**Why this priority**: A refinement of the core feature that keeps the overdue indicator
+trustworthy for users who leave the app open; lower priority than the core marking and
+completion behavior since it builds on top of both.
 
 **Independent Test**: Open the todo list with a todo due "today"; without reloading the
 page, wait until the due date has passed (or simulate the date change) and verify the todo
@@ -78,7 +85,8 @@ becomes marked overdue without requiring a manual refresh.
 
 1. **Given** the todo list is open and a todo's due date passes while the page remains open,
    **When** the due date passes, **Then** the todo becomes visually marked as overdue without
-   the user needing to refresh the page.
+   the user needing to refresh the page, via a periodic (e.g., at least once per minute)
+   re-evaluation of overdue status while the list is displayed.
 
 ---
 
@@ -102,7 +110,9 @@ becomes marked overdue without requiring a manual refresh.
 - **FR-001**: The system MUST determine a todo to be "overdue" when it has a due date, that
   due date is earlier than the current date, and the todo's status is incomplete.
 - **FR-002**: The system MUST visually distinguish overdue todos from other todos in the todo
-  list (e.g., distinct color and/or text label) so overdue items are identifiable at a glance.
+  list using a text label/badge (e.g., "Overdue") styled with the Danger color, shown next to
+  or below the due date, so overdue items are identifiable at a glance without relying on
+  color alone.
 - **FR-003**: The system MUST NOT mark a todo as overdue if it has no due date set.
 - **FR-004**: The system MUST NOT mark a todo as overdue if its due date is today or in the
   future.
@@ -116,6 +126,10 @@ becomes marked overdue without requiring a manual refresh.
   due date has changed.
 - **FR-009**: The overdue visual indicator MUST remain distinguishable in both light and dark
   display modes.
+- **FR-010**: While the todo list remains open, the system MUST periodically re-evaluate
+  overdue status (e.g., at least once per minute) so that a todo becomes marked overdue as
+  soon as its due date passes, without requiring the user to refresh the page or take any
+  other action.
 
 ### Key Entities
 
@@ -145,10 +159,11 @@ becomes marked overdue without requiring a manual refresh.
   semantics in the functional requirements.
 - The existing "Danger" color already defined in the UI guidelines (used for delete actions)
   is an acceptable basis for the overdue visual treatment, reused for consistency rather than
-  introducing a new color.
-- Recalculating overdue status on each list view/render is sufficient; a background timer that
-  updates overdue status while the page is idle and untouched is a nice-to-have (User Story 3)
-  rather than a hard requirement.
+  introducing a new color, paired with a text label/badge (e.g., "Overdue") so the indicator
+  does not rely on color alone.
+- A periodic timer (at least once per minute) re-evaluates overdue status while the todo list
+  remains open, so User Story 3 (live auto-update without page refresh) is a hard requirement
+  of this feature, not a deferred nice-to-have.
 - This feature only affects how existing todos are displayed; it does not change the todo data
   model, the create/update/delete API, or the out-of-scope items already defined in
   `docs/functional-requirements.md` (e.g., no notifications/reminders for overdue items).
