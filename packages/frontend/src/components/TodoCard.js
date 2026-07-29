@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { isOverdue } from '../utils/overdue';
 
 function TodoCard({ todo, onToggle, onEdit, onDelete, isLoading }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const [editDueDate, setEditDueDate] = useState(todo.dueDate || '');
   const [editError, setEditError] = useState(null);
+  const [, setOverdueCheckTick] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setOverdueCheckTick((tick) => tick + 1);
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleToggle = async () => {
     try {
@@ -123,6 +133,9 @@ function TodoCard({ todo, onToggle, onEdit, onDelete, isLoading }) {
           <p className="todo-due-date">
             Due: {formatDate(todo.dueDate)}
           </p>
+        )}
+        {isOverdue(todo) && (
+          <span className="todo-overdue-badge">Overdue</span>
         )}
       </div>
 

@@ -29,8 +29,8 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 **Purpose**: Establish a clean baseline and the new file locations before making changes
 
-- [ ] T001 Run `npm run test:frontend` from the repo root to confirm the existing frontend test suite passes before starting (clean baseline)
-- [ ] T002 [P] Create the `packages/frontend/src/utils/` and `packages/frontend/src/utils/__tests__/` directories per plan.md Project Structure (no files yet)
+- [X] T001 Run `npm run test:frontend` from the repo root to confirm the existing frontend test suite passes before starting (clean baseline)
+- [X] T002 [P] Create the `packages/frontend/src/utils/` and `packages/frontend/src/utils/__tests__/` directories per plan.md Project Structure (no files yet)
 
 **Checkpoint**: Baseline verified, new directories exist
 
@@ -42,8 +42,8 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Write unit tests for `isOverdue(todo, now)` in `packages/frontend/src/utils/__tests__/overdue.test.js` covering: no `dueDate` set (FR-003, expect `false`), `dueDate` equal to today (FR-004, expect `false`), `dueDate` in the future (FR-004, expect `false`), `dueDate` in the past with `completed` falsy (FR-001, expect `true`), and `dueDate` in the past with `completed` truthy (FR-005, expect `false`); pass an injectable `now` argument for deterministic dates. Run the tests and confirm they FAIL (no implementation exists yet).
-- [ ] T004 Implement `isOverdue(todo, now = new Date())` as a pure function in `packages/frontend/src/utils/overdue.js`, comparing only the calendar-date portion of `todo.dueDate` and `now` (both truncated to local midnight) per research.md decision 1, so that T003 tests pass
+- [X] T003 Write unit tests for `isOverdue(todo, now)` in `packages/frontend/src/utils/__tests__/overdue.test.js` covering: no `dueDate` set (FR-003, expect `false`), `dueDate` equal to today (FR-004, expect `false`), `dueDate` in the future (FR-004, expect `false`), `dueDate` in the past with `completed` falsy (FR-001, expect `true`), and `dueDate` in the past with `completed` truthy (FR-005, expect `false`); pass an injectable `now` argument for deterministic dates. Run the tests and confirm they FAIL (no implementation exists yet).
+- [X] T004 Implement `isOverdue(todo, now = new Date())` as a pure function in `packages/frontend/src/utils/overdue.js`, comparing only the calendar-date portion of `todo.dueDate` and `now` (both truncated to local midnight) per research.md decision 1, so that T003 tests pass
 
 **Checkpoint**: `isOverdue` utility complete and fully unit-tested — user story implementation can now begin
 
@@ -59,13 +59,13 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T005 [P] [US1] Add test cases to `packages/frontend/src/components/__tests__/TodoCard.test.js`: renders the "Overdue" badge for a todo with a past `dueDate` and `completed: 0`; does NOT render the badge for a todo due today; does NOT render the badge for a todo due in the future; does NOT render the badge for a todo with no `dueDate` (FR-001, FR-003, FR-004). Run and confirm these new cases FAIL.
+- [X] T005 [P] [US1] Add test cases to `packages/frontend/src/components/__tests__/TodoCard.test.js`: renders the "Overdue" badge for a todo with a past `dueDate` and `completed: 0`; does NOT render the badge for a todo due today; does NOT render the badge for a todo due in the future; does NOT render the badge for a todo with no `dueDate` (FR-001, FR-003, FR-004). Run and confirm these new cases FAIL.
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] In `packages/frontend/src/components/TodoCard.js`, import `isOverdue` from `../utils/overdue` and conditionally render `<span className="todo-overdue-badge">Overdue</span>` inside the `.todo-content` block, next to/below the due date text, only when `isOverdue(todo)` is `true` (depends on T004)
-- [ ] T007 [P] [US1] Add a `.todo-overdue-badge` CSS rule to `packages/frontend/src/App.css` using `color: var(--danger-color)` (reusing the existing token, no new colors), consistent with existing text styling in the card and verified visually distinguishable in both light and dark theme tokens defined in `packages/frontend/src/styles/theme.css` (FR-002, FR-009)
-- [ ] T008 [US1] Run `npm run test:frontend` and confirm the T005 test cases now pass with no regressions in existing `TodoCard.test.js` cases (depends on T006, T007)
+- [X] T006 [US1] In `packages/frontend/src/components/TodoCard.js`, import `isOverdue` from `../utils/overdue` and conditionally render `<span className="todo-overdue-badge">Overdue</span>` inside the `.todo-content` block, next to/below the due date text, only when `isOverdue(todo)` is `true` (depends on T004)
+- [X] T007 [P] [US1] Add a `.todo-overdue-badge` CSS rule to `packages/frontend/src/App.css` using `color: var(--danger-color)` (reusing the existing token, no new colors), consistent with existing text styling in the card and verified visually distinguishable in both light and dark theme tokens defined in `packages/frontend/src/styles/theme.css` (FR-002, FR-009)
+- [X] T008 [US1] Run `npm run test:frontend` and confirm the T005 test cases now pass with no regressions in existing `TodoCard.test.js` cases (depends on T006, T007)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — this is the MVP
 
@@ -81,13 +81,13 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T009 [P] [US2] Add test cases to `packages/frontend/src/components/__tests__/TodoCard.test.js`: the "Overdue" badge is absent when an overdue todo's `completed` prop becomes truthy, and reappears when `completed` becomes falsy again while `dueDate` is still in the past (FR-005, FR-006). Run and confirm these new cases FAIL.
-- [ ] T010 [P] [US2] Add a test case to `packages/frontend/src/components/__tests__/TodoCard.test.js`: editing an overdue todo's due date to tomorrow via the edit form and submitting causes `onEdit` to be called with the new date and the badge to disappear once the component re-renders with the updated `dueDate` prop (FR-007). Run and confirm this new case FAILS.
+- [X] T009 [P] [US2] Add test cases to `packages/frontend/src/components/__tests__/TodoCard.test.js`: the "Overdue" badge is absent when an overdue todo's `completed` prop becomes truthy, and reappears when `completed` becomes falsy again while `dueDate` is still in the past (FR-005, FR-006). Run and confirm these new cases FAIL.
+- [X] T010 [P] [US2] Add a test case to `packages/frontend/src/components/__tests__/TodoCard.test.js`: editing an overdue todo's due date to tomorrow via the edit form and submitting causes `onEdit` to be called with the new date and the badge to disappear once the component re-renders with the updated `dueDate` prop (FR-007). Run and confirm this new case FAILS.
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] In `packages/frontend/src/components/TodoCard.js`, verify/adjust the badge rendering from T006 so `isOverdue(todo)` is recomputed directly from the current `todo` prop on every render (no stale memoization), ensuring toggling `completed` and updating `dueDate` immediately change the badge with no extra state needed (depends on T006)
-- [ ] T012 [US2] Run `npm run test:frontend` and confirm the T009 and T010 test cases now pass with no regressions (depends on T011)
+- [X] T011 [US2] In `packages/frontend/src/components/TodoCard.js`, verify/adjust the badge rendering from T006 so `isOverdue(todo)` is recomputed directly from the current `todo` prop on every render (no stale memoization), ensuring toggling `completed` and updating `dueDate` immediately change the badge with no extra state needed (depends on T006)
+- [X] T012 [US2] Run `npm run test:frontend` and confirm the T009 and T010 test cases now pass with no regressions (depends on T011)
 
 **Checkpoint**: User Stories 1 AND 2 both work independently
 
@@ -103,12 +103,12 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T013 [P] [US3] Add a test case to `packages/frontend/src/components/__tests__/TodoCard.test.js` using `jest.useFakeTimers()`: render a `TodoCard` for a todo due "today", advance the mocked date/timer past the interval (`jest.advanceTimersByTime`) so the due date is now in the past, and verify the "Overdue" badge appears without remounting the component (FR-010). Run and confirm this new case FAILS.
+- [X] T013 [P] [US3] Add a test case to `packages/frontend/src/components/__tests__/TodoCard.test.js` using `jest.useFakeTimers()`: render a `TodoCard` for a todo due "today", advance the mocked date/timer past the interval (`jest.advanceTimersByTime`) so the due date is now in the past, and verify the "Overdue" badge appears without remounting the component (FR-010). Run and confirm this new case FAILS.
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] In `packages/frontend/src/components/TodoCard.js`, add a `useEffect` that starts a `setInterval` (>= 60000ms) incrementing a local "tick" state used only to force re-evaluation of `isOverdue` on each interval firing, and clears the interval on unmount, per research.md decision 3 (depends on T006, T011)
-- [ ] T015 [US3] Run `npm run test:frontend` and confirm the T013 test case now passes and the full frontend suite is green (depends on T014)
+- [X] T014 [US3] In `packages/frontend/src/components/TodoCard.js`, add a `useEffect` that starts a `setInterval` (>= 60000ms) incrementing a local "tick" state used only to force re-evaluation of `isOverdue` on each interval firing, and clears the interval on unmount, per research.md decision 3 (depends on T006, T011)
+- [X] T015 [US3] Run `npm run test:frontend` and confirm the T013 test case now passes and the full frontend suite is green (depends on T014)
 
 **Checkpoint**: All three user stories are independently functional
 
@@ -118,10 +118,10 @@ Web app (existing monorepo): `packages/frontend/src/...` (per plan.md Project St
 
 **Purpose**: Final validation across all user stories
 
-- [ ] T016 [P] Manually verify Overdue badge visibility/contrast in both light and dark themes using the `ThemeToggle` component, per quickstart.md scenario 7 (FR-009)
-- [ ] T017 [P] Manually run quickstart.md validation scenarios 1–7 in `specs/001-overdue-todo-indicator/quickstart.md` against `npm run start`
-- [ ] T018 Run `npm run test:frontend -- --coverage` and confirm no new lint errors and coverage remains consistent with `docs/testing-guidelines.md` (80%+ target)
-- [ ] T019 Confirm no changes were made to `packages/backend`, `packages/frontend/src/services/todoService.js`, or any todo data model/API contract, per plan.md constraints
+- [X] T016 [P] Manually verify Overdue badge visibility/contrast in both light and dark themes using the `ThemeToggle` component, per quickstart.md scenario 7 (FR-009)
+- [X] T017 [P] Manually run quickstart.md validation scenarios 1–7 in `specs/001-overdue-todo-indicator/quickstart.md` against `npm run start`
+- [X] T018 Run `npm run test:frontend -- --coverage` and confirm no new lint errors and coverage remains consistent with `docs/testing-guidelines.md` (80%+ target)
+- [X] T019 Confirm no changes were made to `packages/backend`, `packages/frontend/src/services/todoService.js`, or any todo data model/API contract, per plan.md constraints
 
 ---
 

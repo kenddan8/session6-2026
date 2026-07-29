@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import TodoCard from '../TodoCard';
 
 describe('TodoCard Component', () => {
@@ -98,5 +98,94 @@ describe('TodoCard Component', () => {
     render(<TodoCard todo={todoNoDate} {...mockHandlers} isLoading={false} />);
     
     expect(screen.queryByText(/Due:/)).not.toBeInTheDocument();
+  });
+
+  describe('Overdue badge', () => {
+    it('renders the Overdue badge for a todo with a past dueDate and completed: 0', () => {
+      const overdueTodo = { ...mockTodo, dueDate: '2020-01-01', completed: 0 };
+      render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+    });
+
+    it('does not render the Overdue badge for a todo due today', () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const todoDueToday = { ...mockTodo, dueDate: today, completed: 0 };
+      render(<TodoCard todo={todoDueToday} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('does not render the Overdue badge for a todo due in the future', () => {
+      const todoDueFuture = { ...mockTodo, dueDate: '2099-01-01', completed: 0 };
+      render(<TodoCard todo={todoDueFuture} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('does not render the Overdue badge for a todo with no dueDate', () => {
+      const todoNoDate = { ...mockTodo, dueDate: null, completed: 0 };
+      render(<TodoCard todo={todoNoDate} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('badge is absent when an overdue todo becomes completed, and reappears when marked incomplete again', () => {
+      const overdueTodo = { ...mockTodo, dueDate: '2020-01-01', completed: 0 };
+      const { rerender } = render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+
+      const completedTodo = { ...overdueTodo, completed: 1 };
+      rerender(<TodoCard todo={completedTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+
+      rerender(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+    });
+
+    it('badge disappears once an overdue todo due date is edited to tomorrow', async () => {
+      const overdueTodo = { ...mockTodo, dueDate: '2020-01-01', completed: 0 };
+      const { rerender } = render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+
+      const editButton = screen.getByLabelText(/Edit/);
+      fireEvent.click(editButton);
+
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const dueDateInput = screen.getByLabelText('Edit due date');
+      fireEvent.change(dueDateInput, { target: { value: tomorrow } });
+
+      const saveButton = screen.getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(mockHandlers.onEdit).toHaveBeenCalledWith(overdueTodo.id, overdueTodo.title, tomorrow);
+
+      const editedTodo = { ...overdueTodo, dueDate: tomorrow };
+      rerender(<TodoCard todo={editedTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('marks a todo due "today" as overdue once the periodic timer ticks past midnight, without remounting', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-07-29T23:59:00'));
+
+      const todoDueToday = { ...mockTodo, dueDate: '2026-07-29', completed: 0 };
+      render(<TodoCard todo={todoDueToday} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+
+      jest.setSystemTime(new Date('2026-07-30T00:01:00'));
+      act(() => {
+        jest.advanceTimersByTime(60000);
+      });
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+
+      jest.useRealTimers();
+    });
   });
 });
